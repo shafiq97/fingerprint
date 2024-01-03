@@ -38,7 +38,7 @@ class AddFingerprintGuidePage extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () =>
                     AppSettings.openAppSettings(type: AppSettingsType.security),
-                child: const Text('Open Settings'),
+                child: const Text('Add fingerprint'),
               ),
             ),
           ],

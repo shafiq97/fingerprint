@@ -7,18 +7,20 @@
 import 'dart:async';
 
 import 'package:fingerprint/add_auth.dart';
-import 'package:fingerprint/register_page.dart';
+import 'package:fingerprint/login.dart';
+import 'package:fingerprint/profile_page.dart';
 import 'package:fingerprint/tac.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 
-void main() => runApp(const MaterialApp(
-      home: RegisterPage(),
+void main() => runApp(MaterialApp(
+      home: LoginPage(),
     ));
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  final String username; // Add this line
+  const MyApp({super.key, required this.username});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -26,12 +28,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final LocalAuthentication auth = LocalAuthentication();
+
   _SupportState _supportState = _SupportState.unknown;
   bool? _canCheckBiometrics;
   List<BiometricType>? _availableBiometrics;
   String _authorized = 'Not Authorized';
   bool _isAuthenticating = false;
   int authenticationAttempts = 0;
+  String? _loggedInUsername; // Add this line
 
   @override
   void initState() {
@@ -137,6 +141,10 @@ class _MyAppState extends State<MyApp> {
           _authorized = 'Authorized';
           authenticationAttempts = 0; // Reset counter on success
         });
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+              builder: (context) => ProfilePage(username: _loggedInUsername!)),
+        );
       } else {
         setState(() {
           _authorized = 'Not Authorized';
@@ -163,7 +171,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Authenticate'),
         ),
         body: ListView(
           padding: const EdgeInsets.only(top: 30),
@@ -177,19 +185,19 @@ class _MyAppState extends State<MyApp> {
                   const Text('This device is supported')
                 else
                   const Text('This device is not supported'),
+                // const Divider(height: 100),
+                // Text('Can check biometrics: $_canCheckBiometrics\n'),
+                // ElevatedButton(
+                //   onPressed: _checkBiometrics,
+                //   child: const Text('Check biometrics'),
+                // ),
                 const Divider(height: 100),
-                Text('Can check biometrics: $_canCheckBiometrics\n'),
-                ElevatedButton(
-                  onPressed: _checkBiometrics,
-                  child: const Text('Check biometrics'),
-                ),
-                const Divider(height: 100),
-                Text('Available biometrics: $_availableBiometrics\n'),
-                ElevatedButton(
-                  onPressed: _getAvailableBiometrics,
-                  child: const Text('Get available biometrics'),
-                ),
-                const Divider(height: 100),
+                // Text('Available biometrics: $_availableBiometrics\n'),
+                // ElevatedButton(
+                //   onPressed: _getAvailableBiometrics,
+                //   child: const Text('Get available biometrics'),
+                // ),
+                // const Divider(height: 100),
                 Text('Current State: $_authorized\n'),
                 if (_isAuthenticating)
                   ElevatedButton(
@@ -211,22 +219,22 @@ class _MyAppState extends State<MyApp> {
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             Text('Authenticate'),
-                            Icon(Icons.perm_device_information),
+                            Icon(Icons.fingerprint),
                           ],
                         ),
                       ),
-                      ElevatedButton(
-                        onPressed: _authenticateWithBiometrics,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Text(_isAuthenticating
-                                ? 'Cancel'
-                                : 'Authenticate: biometrics only'),
-                            const Icon(Icons.fingerprint),
-                          ],
-                        ),
-                      ),
+                      // ElevatedButton(
+                      //   onPressed: _authenticateWithBiometrics,
+                      //   child: Row(
+                      //     mainAxisSize: MainAxisSize.min,
+                      //     children: <Widget>[
+                      //       Text(_isAuthenticating
+                      //           ? 'Cancel'
+                      //           : 'Authenticate: biometrics only'),
+                      //       const Icon(Icons.fingerprint),
+                      //     ],
+                      //   ),
+                      // ),
                     ],
                   ),
                 ElevatedButton(
@@ -237,7 +245,7 @@ class _MyAppState extends State<MyApp> {
                               const AddFingerprintGuidePage()),
                     );
                   },
-                  child: const Text('Guide to Add Fingerprint'),
+                  child: const Text('Add fingerprint'),
                 ),
               ],
             ),

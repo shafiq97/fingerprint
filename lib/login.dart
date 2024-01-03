@@ -1,4 +1,7 @@
 import 'package:fingerprint/database_helper.dart';
+import 'package:fingerprint/main.dart';
+import 'package:fingerprint/profile_page.dart';
+import 'package:fingerprint/register_page.dart';
 import 'package:fingerprint/user_model.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
+      appBar: AppBar(title: const Text('Login')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -29,14 +32,14 @@ class _LoginPageState extends State<LoginPage> {
           children: <Widget>[
             TextField(
               controller: _usernameController,
-              decoration: InputDecoration(labelText: 'Username'),
+              decoration: const InputDecoration(labelText: 'Username'),
             ),
             TextField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
+              decoration: const InputDecoration(labelText: 'Password'),
               obscureText: true,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
                 // Ensure non-empty credentials
@@ -44,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
                     _passwordController.text.isEmpty) {
                   // Show an error or alert that both fields are required.
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                         content:
                             Text("Please enter both username and password")),
                   );
@@ -58,17 +61,36 @@ class _LoginPageState extends State<LoginPage> {
                 // Check user and password
                 if (user != null && user.password == _passwordController.text) {
                   // Correct credentials, navigate or unlock the app
-                  print("Login successful!");
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            ProfilePage(username: _usernameController.text)),
+                  );
                   // Navigate to the next screen or dashboard
                 } else {
                   // Incorrect credentials, show error
                   print("Incorrect username or password!");
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Incorrect username or password!")),
+                    const SnackBar(
+                        content: Text("Incorrect username or password!")),
                   );
                 }
               },
-              child: Text('Login'),
+              child: const Text('Login'),
+            ),
+            const SizedBox(height: 20), // Add space between buttons
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to the registration page or open registration dialog
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RegisterPage()),
+                );
+              },
+              child: const Text('Register'), // The text inside the button
+              style: ElevatedButton.styleFrom(
+                primary: Colors.green, // Set the background color
+              ),
             )
           ],
         ),

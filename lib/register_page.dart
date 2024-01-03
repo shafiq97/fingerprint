@@ -60,6 +60,22 @@ class _RegisterPageState extends State<RegisterPage> {
                 }
               },
               child: const Text("Register"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Navigate back to the LoginPage
+                Navigator.of(context)
+                    .pop(); // If RegisterPage is on top of LoginPage
+                // or
+                // Navigator.pushReplacement(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => LoginPage()),
+                // ); // If LoginPage is not in the stack
+              },
+              style: ElevatedButton.styleFrom(
+                primary: Colors.grey, // Set a different color to distinguish
+              ),
+              child: const Text("Login instead"),
             )
           ],
         ),

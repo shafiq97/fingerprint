@@ -10,6 +10,18 @@ class DatabaseHelper {
 
   DatabaseHelper._init();
 // In your DatabaseHelper class
+
+  Future<int> updateUser(User user) async {
+    final db = await database;
+
+    return db.update(
+      'users',
+      user.toMap(),
+      where: 'id = ?',
+      whereArgs: [user.id],
+    );
+  }
+
   Future<User?> getUser(String username) async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
