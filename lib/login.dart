@@ -1,5 +1,6 @@
 import 'package:fingerprint/database_helper.dart';
 import 'package:fingerprint/main.dart';
+import 'package:fingerprint/nfc_page.dart';
 import 'package:fingerprint/profile_page.dart';
 import 'package:fingerprint/register_page.dart';
 import 'package:fingerprint/user_model.dart';
@@ -61,11 +62,10 @@ class _LoginPageState extends State<LoginPage> {
                 // Check user and password
                 if (user != null && user.password == _passwordController.text) {
                   // Correct credentials, navigate or unlock the app
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            ProfilePage(username: _usernameController.text)),
-                  );
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => NfcPage(
+                            username: _usernameController.text,
+                          )));
                   // Navigate to the next screen or dashboard
                 } else {
                   // Incorrect credentials, show error
