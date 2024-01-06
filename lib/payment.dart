@@ -1,3 +1,6 @@
+import 'package:fingerprint/login.dart';
+import 'package:fingerprint/nfc_page.dart';
+import 'package:fingerprint/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
@@ -23,7 +26,7 @@ class _PaymentPageState extends State<PaymentPage> {
     try {
       bool authenticated = await auth.authenticate(
         localizedReason: 'Please authenticate to complete the transaction',
-        options: AuthenticationOptions(
+        options: const AuthenticationOptions(
           biometricOnly: true, // Only biometrics are enabled
           useErrorDialogs: true,
           stickyAuth: true,
@@ -88,11 +91,11 @@ class _PaymentPageState extends State<PaymentPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Payment Success"),
-          content: Text("The payment was successful."),
+          title: const Text("Payment Success"),
+          content: const Text("The payment was successful."),
           actions: <Widget>[
             ElevatedButton(
-              child: Text("OK"),
+              child: const Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop(); // Dismiss the dialog
               },
@@ -108,14 +111,16 @@ class _PaymentPageState extends State<PaymentPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Account Blocked"),
-          content: Text(
-              "Too many failed attempts. Please contact admin to proceed."),
+          title: const Text("Account Blocked"),
+          content: const Text(
+              "Your account is blocked please go to nearby branch for assistance."),
           actions: <Widget>[
             ElevatedButton(
-              child: Text("OK"),
+              child: const Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop(); // Dismiss the dialog
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
               },
             ),
           ],
@@ -127,7 +132,7 @@ class _PaymentPageState extends State<PaymentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Payment')),
+      appBar: AppBar(title: const Text('Payment')),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -138,8 +143,9 @@ class _PaymentPageState extends State<PaymentPage> {
               children: <Widget>[
                 TextFormField(
                   controller: _amountController,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  decoration: InputDecoration(
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
                     labelText: 'Enter amount',
                     border: OutlineInputBorder(),
                   ),
@@ -159,7 +165,7 @@ class _PaymentPageState extends State<PaymentPage> {
                       _authenticateAndProceed(); // Trigger authentication on button press
                     }
                   },
-                  child: Text('Submit Payment'),
+                  child: const Text('Submit Payment'),
                 ),
               ],
             ),
@@ -180,7 +186,7 @@ class PinEntryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Enter PIN')),
+      appBar: AppBar(title: const Text('Enter PIN')),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -188,7 +194,7 @@ class PinEntryScreen extends StatelessWidget {
           TextField(
             controller: _pinController,
             obscureText: true,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'PIN',
               border: OutlineInputBorder(),
             ),
@@ -197,7 +203,7 @@ class PinEntryScreen extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () => onPinEntered(_pinController.text),
-            child: Text('Submit'),
+            child: const Text('Submit'),
           ),
         ],
       ),

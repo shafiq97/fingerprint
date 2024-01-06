@@ -14,7 +14,6 @@ class NfcPage extends StatefulWidget {
 
 class NfcPageState extends State<NfcPage> {
   ValueNotifier<dynamic> result = ValueNotifier(null);
-  String? _loggedInUsername; // Add this line
 
   @override
   Widget build(BuildContext context) {
