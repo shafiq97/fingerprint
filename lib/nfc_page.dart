@@ -59,12 +59,6 @@ class NfcPageState extends State<NfcPage> {
                                 onPressed: _viewProfile),
                             ElevatedButton(
                                 child: Text('Tag Read'), onPressed: _tagRead),
-                            ElevatedButton(
-                                child: Text('Ndef Write'),
-                                onPressed: _ndefWrite),
-                            ElevatedButton(
-                                child: Text('Ndef Write Lock'),
-                                onPressed: _ndefWriteLock),
                           ],
                         ),
                       ),
