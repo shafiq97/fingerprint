@@ -23,40 +23,64 @@ class _PaymentPageState extends State<PaymentPage> {
     try {
       bool authenticated = await auth.authenticate(
         localizedReason: 'Please authenticate to complete the transaction',
-        options: const AuthenticationOptions(
-          biometricOnly: true,
-          useErrorDialogs: true, // Display error dialogs
-          stickyAuth: true, // Keep authentication session alive
+        options: AuthenticationOptions(
+          biometricOnly: true, // Only biometrics are enabled
+          useErrorDialogs: true,
+          stickyAuth: true,
         ),
       );
 
       if (!mounted) return;
 
       if (authenticated) {
-        setState(() {
-          _authAttempts = 0; // Reset attempts after successful authentication
-          print(
-              'Authenticated! Processing payment of ${_amountController.text}');
-          _showSuccessDialog(); // Show success dialog or navigate to success page
-        });
+        // Success case
+        _resetAuth();
+        _showSuccessDialog(); // Show success dialog or navigate to success page
       } else {
-        _handleAuthenticationFailure();
+        // Biometric authentication failed, navigate to custom PIN screen
+        _navigateToPinScreen();
       }
     } on PlatformException catch (e) {
       print("Authentication error: $e");
-      _handleAuthenticationFailure();
+      // Biometric authentication failed, navigate to custom PIN screen
+      _navigateToPinScreen();
     }
   }
 
-  void _handleAuthenticationFailure() {
+  void _resetAuth() {
     setState(() {
-      _authAttempts++; // Increment the counter for every failed attempt
-      print("Authentication failed $_authAttempts time(s)");
-      if (_authAttempts >= 3) {
-        // If failed 3 times
-        _showBlockedAccountDialog(); // Show blocked account dialog
-      }
+      _authAttempts = 0; // Reset attempts after successful authentication
     });
+  }
+
+  void _navigateToPinScreen() {
+    // Navigate to your custom PIN screen
+    Navigator.of(context).push(
+      MaterialPageRoute(
+          builder: (context) => PinEntryScreen(onPinEntered: _validatePin)),
+    );
+  }
+
+  void _validatePin(String enteredPin) {
+    // Implement your logic to validate the entered PIN
+    // For now, let's assume the correct PIN is '1234'
+    if (enteredPin == '1234') {
+      // Correct PIN
+      _resetAuth();
+      _showSuccessDialog();
+    } else {
+      // Incorrect PIN
+      setState(() {
+        _authAttempts++;
+        if (_authAttempts >= 3) {
+          _showBlockedAccountDialog(); // Show blocked account dialog
+          _authAttempts = 0; // Reset for future
+        } else {
+          // Maybe give feedback about wrong PIN and allow to try again
+          _navigateToPinScreen(); // Go back to PIN screen for another attempt
+        }
+      });
+    }
   }
 
   void _showSuccessDialog() {
@@ -132,7 +156,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState?.validate() ?? false) {
-                      _authenticateAndProceed(); // Trigger fingerprint authentication on button press
+                      _authenticateAndProceed(); // Trigger authentication on button press
                     }
                   },
                   child: Text('Submit Payment'),
@@ -141,6 +165,41 @@ class _PaymentPageState extends State<PaymentPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class PinEntryScreen extends StatelessWidget {
+  final Function(String) onPinEntered;
+
+  PinEntryScreen({required this.onPinEntered});
+
+  final TextEditingController _pinController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Enter PIN')),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // You might want to use a more secure text field or a custom PIN entry widget
+          TextField(
+            controller: _pinController,
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: 'PIN',
+              border: OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.number,
+            maxLength: 4, // Assuming PIN is 4 digits
+          ),
+          ElevatedButton(
+            onPressed: () => onPinEntered(_pinController.text),
+            child: Text('Submit'),
+          ),
+        ],
       ),
     );
   }
